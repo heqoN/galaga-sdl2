@@ -5,6 +5,9 @@
 
 class Player{
     public:
+        Player();
+        ~Player();
+
         void handleInput(const Uint8 *keystate);
         void update();
         void render(SDL_Renderer *renderer);

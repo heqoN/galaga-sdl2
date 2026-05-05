@@ -1,7 +1,7 @@
 #include "player.h"
 
 Player::Player(){
-    this->x=385;
+    this->x=350;
     this->y=400;
     this->speed=5;
     this->texture=nullptr;
@@ -32,6 +32,6 @@ void Player::update(){
 void Player::render(SDL_Renderer *renderer){
     if(!texture) return;
 
-    SDL_Rect dest={(int)this->x,(int)this->y,30,30};
+    SDL_Rect dest={(int)this->x,(int)this->y,50,50};
     SDL_RenderCopy(renderer,this->texture,NULL,&dest);
 }

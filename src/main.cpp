@@ -39,22 +39,19 @@ int main(void)
         cout<<"Background load failed : "<<IMG_GetError()<<endl;
     }
 
+    Player p;
+
     SDL_Texture *playerTexture=IMG_LoadTexture(renderer,"../assets/player.png");
-    SDL_SetTextureBlendMode(playerTexture,SDL_BLENDMODE_BLEND);
     if(!playerTexture){
         cout<<"Player texture load failed : "<<IMG_GetError()<<endl;
         return 1;
     }
+    SDL_SetTextureBlendMode(playerTexture,SDL_BLENDMODE_BLEND);
+    p.setTexture(playerTexture);
 
     SDL_Event event;
 
     bool running=true;
-
-    Player p;
-    p.x=385;
-    p.y=400;
-    p.speed=5;
-
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -63,22 +60,15 @@ int main(void)
             }
         }
 
-        const Uint8* keystate = SDL_GetKeyboardState(nullptr);
-
-        if (keystate[SDL_SCANCODE_W]) p.y -= p.speed;
-        if (keystate[SDL_SCANCODE_S]) p.y += p.speed;
-        if (keystate[SDL_SCANCODE_A]) p.x -= p.speed;
-        if (keystate[SDL_SCANCODE_D]) p.x += p.speed;
-
-
+        const Uint8 *keystate=SDL_GetKeyboardState(nullptr);
+        p.handleInput(keystate);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
         SDL_RenderCopy(renderer, background, NULL, NULL);
 
-        SDL_Rect dest = { (int)p.x, (int)p.y, 50, 50 };
-        SDL_RenderCopy(renderer, playerTexture, NULL, &dest);;
+        p.render(renderer);
 
         SDL_RenderPresent(renderer);
 
