@@ -1,7 +1,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
-#include "entities.h"
+#include "game.h"
+#include "player.h"
+#include "enemy.h"
+#include "bullet.h"
 
 
 using namespace std;
