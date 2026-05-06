@@ -20,9 +20,6 @@ class Game{
         bool init();
         void run();
 
-        Uint32 lastShootTime;
-        Uint32 fireDelay;
-
     private:
         void handleEvents();
         void update();

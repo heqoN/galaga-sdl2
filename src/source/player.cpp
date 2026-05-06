@@ -14,6 +14,9 @@ Player::Player(){
     this->rect.y=400;
     this->rect.w=50;
     this->rect.h=50;
+
+    this->lastShootTime=0;
+    this->fireDelay=200;
 }
 
 Player::~Player(){
@@ -22,6 +25,18 @@ Player::~Player(){
         this->texture=nullptr;
     }
 };
+
+void Player::currentToLastShootTime(Uint32 currentTime){
+    this->lastShootTime=currentTime;
+}
+
+Uint32 Player::getLastShootTime(){
+    return this->lastShootTime;
+}
+
+Uint32 Player::getFireDelay(){
+    return this->fireDelay;
+}
 
 void Player::setTexture(SDL_Texture *tex){
     this->texture=tex;

@@ -14,12 +14,22 @@ class Enemy{
         void setTexture(SDL_Texture *tex);
         void setPosition(float x,float y);
 
+        float getX();
+        float getY();
+
+        void currentToLastShootTime(Uint32 currentTime);
+        Uint32 getLastShootTime();
+        Uint32 getFireDelay();
+
         SDL_Rect getRect() const;
 
     private:
         float x,y;
         int speed;
         int direction; //1 sağ , -1 sol
+
+        Uint32 lastShootTime;
+        Uint32 fireDelay;
 
         SDL_Texture *texture;
         SDL_Rect rect;

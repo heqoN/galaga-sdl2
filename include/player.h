@@ -15,6 +15,10 @@ class Player{
         float getX();
         float getY();
 
+        void currentToLastShootTime(Uint32 currentTime);
+        Uint32 getLastShootTime();
+        Uint32 getFireDelay();
+
         void setTexture(SDL_Texture *tex);
 
         SDL_Rect getRect();
@@ -22,6 +26,9 @@ class Player{
     private:
         float x,y;
         int speed;
+
+        Uint32 lastShootTime;
+        Uint32 fireDelay;
 
         SDL_Texture *texture;
         SDL_Rect rect;

@@ -14,6 +14,9 @@ Enemy::Enemy(){
     this->rect.y=0;
     this->rect.w=50;
     this->rect.h=50;
+
+    this->lastShootTime=0;
+    this->fireDelay=1000;
 }
 
 Enemy::~Enemy(){}
@@ -28,6 +31,26 @@ void Enemy::setPosition(float x,float y){
 
     this->rect.x=(int)x;
     this->rect.y=(int)y;
+}
+
+float Enemy::getX(){
+    return this->x;
+}
+
+float Enemy::getY(){
+    return this->y;
+}
+
+void Enemy::currentToLastShootTime(Uint32 currentTime){
+    this->lastShootTime=currentTime;
+}
+
+Uint32 Enemy::getLastShootTime(){
+    return this->lastShootTime;
+}
+
+Uint32 Enemy::getFireDelay(){
+    return this->fireDelay;
 }
 
 SDL_Rect Enemy::getRect()const{

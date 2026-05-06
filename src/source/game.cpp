@@ -10,9 +10,6 @@ Game::Game(){
     this->window=nullptr;
     this->renderer=nullptr;
     this->background=nullptr;
-
-    this->lastShootTime=0;
-    this->fireDelay=200;
 }
 
 Game::~Game(){
@@ -108,21 +105,33 @@ void Game::handleEvents(){
     this->player.handleInput(keystate);
 
     Uint32 currentTime=SDL_GetTicks();
-    if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->lastShootTime  >  this->fireDelay ){
+    if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->player.getLastShootTime()  >  this->player.getFireDelay() ){
         Bullet b;
 
         b.setPosition(this->player.getX()+20,this->player.getY());
-        b.shoot();
+        b.shoot(BULLET_Type::Player);
 
-        bullets.push_back(b);
+        this->bullets.push_back(b);
 
-        this->lastShootTime=currentTime;
+        this->player.currentToLastShootTime(currentTime);
     }
 }
 
 void Game::update(){
     this->player.update();
     this->enemy.update();
+
+    Uint32 currentTime=SDL_GetTicks();
+    if(currentTime - this->enemy.getLastShootTime() > this->enemy.getFireDelay()){
+        Bullet b;
+
+        b.setPosition(this->enemy.getX(),this->enemy.getY()+20);
+        b.shoot(BULLET_Type::Enemy);
+
+        this->bullets.push_back(b);
+
+        this->enemy.currentToLastShootTime(currentTime);
+    } 
 
     for(auto &b:bullets){
         b.update();

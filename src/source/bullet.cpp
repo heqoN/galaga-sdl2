@@ -25,8 +25,14 @@ void Bullet::setPosition(float x,float y){
     this->rect.y=(int)y;
 }
 
-void Bullet::shoot(){
+void Bullet::shoot(BULLET_Type type){
     active=true;
+
+    this->type=type;
+}
+
+BULLET_Type Bullet::getType(){
+    return this->type;
 }
 
 SDL_Rect Bullet::getRect(){
@@ -41,7 +47,16 @@ void Bullet::update(){
     if(!active)
         return;
 
-    this->y-=this->speed;
+    switch (this->type)
+    {
+        case BULLET_Type::Player:
+            this->y -= this->speed;
+            break;
+        
+        case BULLET_Type::Enemy:
+            this->y += this->speed;
+            break;
+    }
 
     if(y<0)
         active=false;
@@ -54,6 +69,16 @@ void Bullet::render(SDL_Renderer *renderer){
     if(!active)
         return;
 
-    SDL_SetRenderDrawColor(renderer,255,0,0,255);
+    switch (this->type)
+    {
+        case BULLET_Type::Player:
+            SDL_SetRenderDrawColor(renderer,255,255,0,255);
+            break;
+        
+        case BULLET_Type::Enemy:
+            SDL_SetRenderDrawColor(renderer,255,0,0,255);
+            break;
+    }
+
     SDL_RenderFillRect(renderer,&this->rect);
 }
