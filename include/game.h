@@ -3,9 +3,13 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <vector>
 
 #include "player.h"
 #include "enemy.h"
+#include "bullet.h"
+
+using namespace std;
 
 
 class Game{
@@ -16,6 +20,9 @@ class Game{
         bool init();
         void run();
 
+        Uint32 lastShootTime;
+        Uint32 fireDelay;
+
     private:
         void handleEvents();
         void update();
@@ -24,6 +31,7 @@ class Game{
         bool running;
         Player player;
         Enemy enemy;
+        vector<Bullet> bullets;
 
         SDL_Window *window;
         SDL_Renderer *renderer;

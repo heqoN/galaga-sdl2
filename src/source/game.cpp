@@ -10,6 +10,9 @@ Game::Game(){
     this->window=nullptr;
     this->renderer=nullptr;
     this->background=nullptr;
+
+    this->lastShootTime=0;
+    this->fireDelay=200;
 }
 
 Game::~Game(){
@@ -60,17 +63,17 @@ bool Game::init(){
         cout<<"Player texture load failed : "<<IMG_GetError()<<endl;
         return false;
     }
-    player.setTexture(playerTexture);
+    this->player.setTexture(playerTexture);
 
     SDL_Texture *enemyTexture=IMG_LoadTexture(this->renderer,"../assets/enemy.png");
     if(!enemyTexture){
         cout<<"Enemy texture load failed : "<<IMG_GetError()<<endl;
         return false;
     }
-    enemy.setTexture(enemyTexture);
+    this->enemy.setTexture(enemyTexture);
 
     // for now
-    enemy.setPosition(375.0f,50.0f);
+    this->enemy.setPosition(375.0f,50.0f);
 
     return true;
 }
@@ -103,11 +106,27 @@ void Game::handleEvents(){
 
     const Uint8 *keystate=SDL_GetKeyboardState(nullptr);
     this->player.handleInput(keystate);
+
+    Uint32 currentTime=SDL_GetTicks();
+    if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->lastShootTime  >  this->fireDelay ){
+        Bullet b;
+
+        b.setPosition(this->player.getX()+20,this->player.getY());
+        b.shoot();
+
+        bullets.push_back(b);
+
+        this->lastShootTime=currentTime;
+    }
 }
 
 void Game::update(){
     this->player.update();
     this->enemy.update();
+
+    for(auto &b:bullets){
+        b.update();
+    }
 }
 
 void Game::render(){
@@ -120,6 +139,10 @@ void Game::render(){
 
     this->player.render(this->renderer);
     this->enemy.render(this->renderer);
+
+    for(auto &b:bullets){
+        b.render(this->renderer);
+    }
 
     SDL_RenderPresent(this->renderer);
 }

@@ -46,7 +46,7 @@ void Enemy::update(){
 }
 
 void Enemy::render(SDL_Renderer *renderer){
-    if(this->texture){
-        SDL_RenderCopy(renderer,this->texture,NULL,&this->rect);
-    }
+    if(!this->texture) return;
+
+    SDL_RenderCopy(renderer,this->texture,NULL,&this->rect);
 }
