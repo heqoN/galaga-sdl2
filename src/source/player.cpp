@@ -19,10 +19,10 @@ void Player::setTexture(SDL_Texture *tex){
 }
 
 void Player::handleInput(const Uint8 *keystate){
-    if (keystate[SDL_SCANCODE_W]) this->y -= this->speed;
-    if (keystate[SDL_SCANCODE_S]) this->y += this->speed;
-    if (keystate[SDL_SCANCODE_A]) this->x -= this->speed;
-    if (keystate[SDL_SCANCODE_D]) this->x += this->speed;
+    if (keystate[SDL_SCANCODE_W] && this->y!=0) this->y -= this->speed;
+    if (keystate[SDL_SCANCODE_S] && this->y<600-50) this->y += this->speed;
+    if (keystate[SDL_SCANCODE_A] && this->x!=0) this->x -= this->speed;
+    if (keystate[SDL_SCANCODE_D] && this->x<800-50) this->x += this->speed;
 }
 
 void Player::update(){

@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "player.h"
+#include "enemy.h"
 
 
 class Game{
@@ -22,6 +23,7 @@ class Game{
 
         bool running;
         Player player;
+        Enemy enemy;
 
         SDL_Window *window;
         SDL_Renderer *renderer;

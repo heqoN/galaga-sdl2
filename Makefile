@@ -1,43 +1,78 @@
-CXX = g++
-CXXFLAGS = -Wall -std=c++17 -Iinclude
+# =========================
+# Compiler
+# =========================
+CXX := g++
 
-SRC_DIR = src
-SOURCE_DIR = $(SRC_DIR)/source
+CXXFLAGS := -std=c++17 -Wall -Wextra
 
-TARGET = build/game
+# =========================
+# SDL2 (Linux / MSYS2 uyumlu)
+# =========================
+SDL_CFLAGS := $(shell sdl2-config --cflags)
+SDL_LIBS := $(shell sdl2-config --libs) -lSDL2_image
 
-SRCS = $(SRC_DIR)/main.cpp $(wildcard $(SOURCE_DIR)/*.cpp)
+# =========================
+# Project structure
+# =========================
+SRC_DIR := src
+SOURCE_DIR := src/source
+BUILD_DIR := build
+INC_DIR := include
+ASSETS_DIR := assets
 
-# -----------------------
-# SDL (Linux)
-# -----------------------
-ifeq ($(OS),Windows_NT)
-    SDL_INC = -IC:/SDL2/include -IC:/SDL2_image/include
-    SDL_LIB = -LC:/SDL2/lib -LC:/SDL2_image/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
-    RM = del /Q
-    EXEC = $(TARGET).exe
-else
-    SDL_INC =
-    SDL_LIB = $(shell sdl2-config --cflags --libs) -lSDL2_image
-    RM = rm -f
-    EXEC = $(TARGET)
-endif
+# =========================
+# Sources
+# =========================
+SRCS := $(wildcard $(SRC_DIR)/*.cpp) \
+        $(wildcard $(SOURCE_DIR)/*.cpp)
 
-# -----------------------
-# Build
-# -----------------------
-all:
-	$(RM) $(EXEC) 2>nul || true
-	$(CXX) $(CXXFLAGS) $(SRCS) -o $(EXEC) $(SDL_INC) $(SDL_LIB)
+OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
-# -----------------------
+TARGET := $(BUILD_DIR)/galaga
+
+# =========================
+# Include
+# =========================
+INCLUDES := -I$(INC_DIR)
+
+# =========================
+# Default target
+# =========================
+all: prepare $(TARGET) copy_assets
+
+# =========================
+# Build executable
+# =========================
+$(TARGET): $(OBJS)
+	$(CXX) $(OBJS) -o $(TARGET) $(SDL_LIBS)
+
+# =========================
+# Compile objects
+# =========================
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(SDL_CFLAGS) -c $< -o $@
+
+# =========================
+# Create build directory
+# =========================
+prepare:
+	@mkdir -p $(BUILD_DIR)
+
+# =========================
+# Copy assets to build
+# =========================
+copy_assets:
+	@cp -r $(ASSETS_DIR) $(BUILD_DIR)/
+
+# =========================
 # Run
-# -----------------------
+# =========================
 run: all
-	./$(EXEC)
+	./$(TARGET)
 
-# -----------------------
+# =========================
 # Clean
-# -----------------------
+# =========================
 clean:
-	$(RM) $(EXEC)
+	rm -rf $(BUILD_DIR)

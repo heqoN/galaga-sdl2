@@ -55,14 +55,22 @@ bool Game::init(){
         cout<<"Background load failed : "<<IMG_GetError()<<endl;
     }
 
-    SDL_Texture *playerTexture = IMG_LoadTexture(this->renderer, "../assets/player.png");
+    SDL_Texture *playerTexture=IMG_LoadTexture(this->renderer,"../assets/player.png");
     if(!playerTexture){
         cout<<"Player texture load failed : "<<IMG_GetError()<<endl;
         return false;
     }
-
     player.setTexture(playerTexture);
 
+    SDL_Texture *enemyTexture=IMG_LoadTexture(this->renderer,"../assets/enemy.png");
+    if(!enemyTexture){
+        cout<<"Enemy texture load failed : "<<IMG_GetError()<<endl;
+        return false;
+    }
+    enemy.setTexture(enemyTexture);
+
+    // for now
+    enemy.setPosition(375.0f,50.0f);
 
     return true;
 }
@@ -99,6 +107,7 @@ void Game::handleEvents(){
 
 void Game::update(){
     this->player.update();
+    this->enemy.update();
 }
 
 void Game::render(){
@@ -110,6 +119,7 @@ void Game::render(){
     }
 
     this->player.render(this->renderer);
+    this->enemy.render(this->renderer);
 
     SDL_RenderPresent(this->renderer);
 }
