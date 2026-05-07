@@ -20,6 +20,8 @@ class Game{
         bool init();
         void run();
 
+        bool checkCollision(const SDL_Rect &a,const SDL_Rect &b);
+
     private:
         void handleEvents();
         void update();

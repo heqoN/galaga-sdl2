@@ -122,10 +122,10 @@ void Game::update(){
     this->enemy.update();
 
     Uint32 currentTime=SDL_GetTicks();
-    if(currentTime - this->enemy.getLastShootTime() > this->enemy.getFireDelay()){
+    if(this->enemy.isAlive()  &&  currentTime - this->enemy.getLastShootTime() > this->enemy.getFireDelay()){
         Bullet b;
 
-        b.setPosition(this->enemy.getX(),this->enemy.getY()+20);
+        b.setPosition(this->enemy.getX()+20,this->enemy.getY()+20);
         b.shoot(BULLET_Type::Enemy);
 
         this->bullets.push_back(b);
@@ -136,6 +136,33 @@ void Game::update(){
     for(auto &b:bullets){
         b.update();
     }
+
+    for(auto it=bullets.begin(); it !=bullets.end();){
+        bool erased=false;
+
+        if(it->getType()==BULLET_Type::Player){
+            if(this->checkCollision(it->getRect(),this->enemy.getRect())){
+                it=bullets.erase(it);
+                erased=true;
+
+                this->enemy.setDead();
+            }
+        }
+
+        else if(it->getType()==BULLET_Type::Enemy){
+            if(this->checkCollision(it->getRect(),this->player.getRect())){
+                it=bullets.erase(it);
+                erased=true;
+
+                this->player.takeDamage(1);
+            }
+        }
+
+        if(!erased)
+            ++it;
+    }
+
+
 }
 
 void Game::render(){
@@ -154,4 +181,8 @@ void Game::render(){
     }
 
     SDL_RenderPresent(this->renderer);
+}
+
+bool Game::checkCollision(const SDL_Rect &a,const SDL_Rect &b){
+    return SDL_HasIntersection(&a,&b);
 }

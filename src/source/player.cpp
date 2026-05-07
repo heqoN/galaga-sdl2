@@ -8,6 +8,8 @@ Player::Player(){
     this->y=400;
 
     this->speed=5;
+    this->health=3-1; // write health-1
+    this->alive=true;
     this->texture=nullptr;
 
     this->rect.x=350;
@@ -42,6 +44,19 @@ void Player::setTexture(SDL_Texture *tex){
     this->texture=tex;
 }
 
+void Player::takeDamage(int dmg){
+    if(dmg>this->health){
+        this->alive=false;
+        return;
+    }
+
+    this->health-=dmg;
+}
+
+bool Player::isAlive(){
+    return this->alive;
+}
+
 SDL_Rect Player::getRect(){
     return this->rect;
 }
@@ -74,7 +89,8 @@ void Player::update(){
 }
 
 void Player::render(SDL_Renderer *renderer){
-    if(!texture) return;
+    if(!this->texture) return;
+    if(!this->alive) return;
 
     SDL_RenderCopy(renderer,this->texture,NULL,&this->rect);
 }

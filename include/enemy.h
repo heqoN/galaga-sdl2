@@ -14,6 +14,10 @@ class Enemy{
         void setTexture(SDL_Texture *tex);
         void setPosition(float x,float y);
 
+        void setAlive();
+        void setDead();
+        bool isAlive();
+
         float getX();
         float getY();
 
@@ -27,6 +31,7 @@ class Enemy{
         float x,y;
         int speed;
         int direction; //1 sağ , -1 sol
+        bool alive;
 
         Uint32 lastShootTime;
         Uint32 fireDelay;

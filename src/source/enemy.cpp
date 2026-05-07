@@ -9,6 +9,7 @@ Enemy::Enemy(){
     this->speed=2;
     this->direction=1;
     this->texture=nullptr;
+    this->alive=true;
 
     this->rect.x=0;
     this->rect.y=0;
@@ -31,6 +32,18 @@ void Enemy::setPosition(float x,float y){
 
     this->rect.x=(int)x;
     this->rect.y=(int)y;
+}
+
+void Enemy::setAlive(){
+    this->alive=true;
+}
+
+void Enemy::setDead(){
+    this->alive=false;
+}
+
+bool Enemy::isAlive(){
+    return this->alive;
 }
 
 float Enemy::getX(){
@@ -70,6 +83,7 @@ void Enemy::update(){
 
 void Enemy::render(SDL_Renderer *renderer){
     if(!this->texture) return;
+    if(!this->alive) return;
 
     SDL_RenderCopy(renderer,this->texture,NULL,&this->rect);
 }
