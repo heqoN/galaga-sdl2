@@ -14,6 +14,11 @@
 
 using namespace std;
 
+enum GameState{
+    MENU,
+    PLAYING,
+    GAME_OVER
+};
 
 class Game{
     public:
@@ -24,6 +29,8 @@ class Game{
         void run();
         void renderText(const string &text,int x,int y);
         void resetGame();
+        void renderMenu();
+        void renderGameOverMenu();
 
         bool checkCollision(const SDL_Rect &a,const SDL_Rect &b);
 
@@ -37,7 +44,7 @@ class Game{
         TTF_Font *font;
 
         bool running;
-        bool gameOver;
+        GameState state;
 
         Player player;
         vector<Enemy> enemies;

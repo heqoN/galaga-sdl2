@@ -8,7 +8,7 @@ using namespace std;
 
 Game::Game(){
     this->running=false;
-    this->gameOver=false;
+    this->state=MENU;
     this->window=nullptr;
     this->renderer=nullptr;
     this->background=nullptr;
@@ -99,7 +99,7 @@ void Game::run(){
     while(this->running){
         this->handleEvents();
 
-        if(!this->gameOver){
+        if(this->state==PLAYING){
             this->update();
         }
 
@@ -116,33 +116,43 @@ void Game::handleEvents(){
             running=false;
         }
 
-        if(this->gameOver){
+        if(event.key.keysym.sym==SDLK_ESCAPE){
+            this->running=false;
+        }
+
+        if(this->state==MENU){
+            if(event.type==SDL_KEYDOWN){
+                if(event.key.keysym.sym==SDLK_RETURN){
+                    this->resetGame();
+                }
+            }
+        }
+
+        else if(this->state==GAME_OVER){
             if(event.type==SDL_KEYDOWN){
                 if(event.key.keysym.sym==SDLK_r){
                     this->resetGame();
-                }
-
-                if(event.key.keysym.sym==SDLK_ESCAPE){
-                    this->running=false;
                 }
             }
         }
     }
 
-    const Uint8 *keystate=SDL_GetKeyboardState(nullptr);
-    this->player.handleInput(keystate);
+    if(this->state==PLAYING){
+        const Uint8 *keystate=SDL_GetKeyboardState(nullptr);
+        this->player.handleInput(keystate);
 
-    Uint32 currentTime=SDL_GetTicks();
-    if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->player.getLastShootTime()  >  this->player.getFireDelay()  &&  this->player.isAlive()==true){
-        Bullet b;
+        Uint32 currentTime=SDL_GetTicks();
+        if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->player.getLastShootTime()  >  this->player.getFireDelay()  &&  this->player.isAlive()==true){
+            Bullet b;
 
-        b.setPosition(this->player.getX()+20,this->player.getY());
-        b.shoot(BULLET_Type::Player);
+            b.setPosition(this->player.getX()+20,this->player.getY());
+            b.shoot(BULLET_Type::Player);
 
-        this->bullets.push_back(b);
+            this->bullets.push_back(b);
 
-        this->player.currentToLastShootTime(currentTime);
-    }
+            this->player.currentToLastShootTime(currentTime);
+        }
+    }   
 }
 
 void Game::update(){
@@ -199,7 +209,7 @@ void Game::update(){
     }
 
     if(!this->player.isAlive()){
-        this->gameOver=true;
+        this->state=GAME_OVER;
     }
 
     this->enemies.erase(
@@ -219,7 +229,7 @@ void Game::render(){
     SDL_SetRenderDrawColor(this->renderer,0,0,0,255);
     SDL_RenderClear(this->renderer);
 
-    if(this->background){
+    if(this->background && this->state!=MENU){
         SDL_RenderCopy(this->renderer, this->background, nullptr, nullptr);
     }
 
@@ -242,12 +252,12 @@ void Game::render(){
         this->renderText("Lives : 0",20,80);
     }
 
-    if(this->gameOver){
-        this->renderText("GAME OVER",330,230);
-        this->renderText("Final Score : "+to_string(this->score),300,270);
-        this->renderText("Final Wave : "+to_string(this->wave),310,300);
-        this->renderText("Press R for restart",285,330);
-        this->renderText("Press ESC for exit",295,360);
+    if(this->state==MENU){
+        this->renderMenu();
+    }
+
+    else if(this->state==GAME_OVER){
+        this->renderGameOverMenu();
     }
 
     SDL_RenderPresent(this->renderer);
@@ -272,12 +282,26 @@ void Game::renderText(const string &text,int x,int y){
 void Game::resetGame(){
     this->score=0;
     this->wave=1;
-    this->gameOver=false;
+    this->state=PLAYING;
 
-    bullets.clear();
-    enemies.clear();
+    this->bullets.clear();
+    this->enemies.clear();
 
     SDL_Texture *texture=this->player.getTexture();
-    player = Player();
-    player.setTexture(texture);
+    this->player = Player();
+    this->player.setTexture(texture);
+}
+
+void Game::renderGameOverMenu(){
+    this->renderText("GAME OVER",330,230);
+    this->renderText("Final Score : "+to_string(this->score),300,270);
+    this->renderText("Final Wave : "+to_string(this->wave),310,300);
+    this->renderText("Press R for restart",285,330);
+    this->renderText("Press ESC for exit",295,360);
+}
+
+void Game::renderMenu(){
+    renderText("GALAGA SDL2",320,180);
+    renderText("Press ENTER to Start",280,300);
+    renderText("Press ESC to Exit",300,380);
 }
