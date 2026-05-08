@@ -16,11 +16,13 @@ class EnemySpawner{
         int enemiesPerWave;
         int spawnedEnemies;
 
+        int getCurrentWave()const;
+
     public:
         EnemySpawner();
         ~EnemySpawner();
 
-        int getCurrentWave()const;
+        int getCurrentWave();
 
         void nextWave();
         void update(vector<Enemy> &enemies,SDL_Texture *enemyTexture);

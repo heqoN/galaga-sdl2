@@ -27,6 +27,10 @@ void EnemySpawner::nextWave(){
     }
 }
 
+int EnemySpawner::getCurrentWave(){
+    return this->currentWave;
+}
+
 void EnemySpawner::update(vector<Enemy> &enemies,SDL_Texture *texture){
     Uint32 currentTime=SDL_GetTicks();
 

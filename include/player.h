@@ -15,6 +15,8 @@ class Player{
         float getX();
         float getY();
 
+        int getHealth();
+
         void takeDamage(int dmg);
         bool isAlive();
 

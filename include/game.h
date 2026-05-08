@@ -3,7 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <vector>
+#include <string>
 
 #include "player.h"
 #include "enemy.h"
@@ -20,6 +22,7 @@ class Game{
 
         bool init();
         void run();
+        void renderText(const string &text,int x,int y);
 
         bool checkCollision(const SDL_Rect &a,const SDL_Rect &b);
 
@@ -27,6 +30,10 @@ class Game{
         void handleEvents();
         void update();
         void render();
+
+        int score;
+        int wave;
+        TTF_Font *font;
 
         bool running;
         Player player;

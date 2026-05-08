@@ -8,7 +8,7 @@ Player::Player(){
     this->y=400;
 
     this->speed=5;
-    this->health=3-1; // write health-1
+    this->health=3;
     this->alive=true;
     this->texture=nullptr;
 
@@ -45,7 +45,7 @@ void Player::setTexture(SDL_Texture *tex){
 }
 
 void Player::takeDamage(int dmg){
-    if(dmg>this->health){
+    if(dmg>=this->health){
         this->alive=false;
         return;
     }
@@ -67,6 +67,10 @@ float Player::getX(){
 
 float Player::getY(){
     return this->y;
+}
+
+int Player::getHealth(){
+    return this->health;
 }
 
 void Player::handleInput(const Uint8 *keystate){

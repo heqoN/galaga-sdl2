@@ -11,6 +11,10 @@ Game::Game(){
     this->window=nullptr;
     this->renderer=nullptr;
     this->background=nullptr;
+
+    this->score=0;
+    this->wave=1;
+    this->font=nullptr;
 }
 
 Game::~Game(){
@@ -36,6 +40,11 @@ bool Game::init(){
 
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         cout<<"IMG init failed : "<<IMG_GetError()<<endl;
+        return false;
+    }
+
+    if(TTF_Init()==-1){
+        cout<<"TTF init failed : "<<TTF_GetError()<<endl;
         return false;
     }
 
@@ -69,6 +78,12 @@ bool Game::init(){
         return false;
     }
     this->enemyTexture=enemyTexture;
+
+    this->font=TTF_OpenFont("../assets/arial.ttf",20);
+    if(!font){
+        cout<<"Font load failed : "<<TTF_GetError()<<endl;
+        return false;
+    }
 
     return true;
 }
@@ -148,6 +163,7 @@ void Game::update(){
                     erased=true;
 
                     e.setDead();
+                    this->score+=1;
                 }
             }
         }
@@ -174,6 +190,7 @@ void Game::update(){
     );
 
     this->spawner.update(enemies,enemyTexture);
+    this->wave=this->spawner.getCurrentWave();
     
 }
 
@@ -195,9 +212,31 @@ void Game::render(){
         b.render(this->renderer);
     }
 
+    this->renderText("Score : "+to_string(this->score),20,20);
+    this->renderText("Wave : "+to_string(this->wave),20,50);
+    if(this->player.isAlive()){
+        this->renderText("Lives : "+to_string(this->player.getHealth()),20,80);
+    }
+    else{
+        this->renderText("Lives : 0",20,80);
+    }
+
+
     SDL_RenderPresent(this->renderer);
 }
 
 bool Game::checkCollision(const SDL_Rect &a,const SDL_Rect &b){
     return SDL_HasIntersection(&a,&b);
+}
+
+void Game::renderText(const string &text,int x,int y){
+    SDL_Color color={255,255,255,255};
+    SDL_Surface *surface=TTF_RenderText_Solid(this->font,text.c_str(),color);
+    SDL_Texture *texture=SDL_CreateTextureFromSurface(this->renderer,surface);
+    SDL_Rect rect={x,y,surface->w,surface->h};
+
+    SDL_RenderCopy(this->renderer,texture,NULL,&rect);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 }
