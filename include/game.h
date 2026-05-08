@@ -23,6 +23,7 @@ class Game{
         bool init();
         void run();
         void renderText(const string &text,int x,int y);
+        void resetGame();
 
         bool checkCollision(const SDL_Rect &a,const SDL_Rect &b);
 
@@ -36,6 +37,8 @@ class Game{
         TTF_Font *font;
 
         bool running;
+        bool gameOver;
+
         Player player;
         vector<Enemy> enemies;
         vector<Bullet> bullets;

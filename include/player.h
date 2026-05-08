@@ -25,6 +25,7 @@ class Player{
         Uint32 getFireDelay();
 
         void setTexture(SDL_Texture *tex);
+        SDL_Texture* getTexture();
 
         SDL_Rect getRect();
 

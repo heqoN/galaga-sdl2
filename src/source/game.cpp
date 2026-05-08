@@ -8,6 +8,7 @@ using namespace std;
 
 Game::Game(){
     this->running=false;
+    this->gameOver=false;
     this->window=nullptr;
     this->renderer=nullptr;
     this->background=nullptr;
@@ -97,7 +98,11 @@ void Game::run(){
 
     while(this->running){
         this->handleEvents();
-        this->update();
+
+        if(!this->gameOver){
+            this->update();
+        }
+
         this->render();
 
         SDL_Delay(16);
@@ -109,6 +114,18 @@ void Game::handleEvents(){
     while(SDL_PollEvent(&event)){
         if(event.type==SDL_QUIT){
             running=false;
+        }
+
+        if(this->gameOver){
+            if(event.type==SDL_KEYDOWN){
+                if(event.key.keysym.sym==SDLK_r){
+                    this->resetGame();
+                }
+
+                if(event.key.keysym.sym==SDLK_ESCAPE){
+                    this->running=false;
+                }
+            }
         }
     }
 
@@ -181,6 +198,10 @@ void Game::update(){
             ++it;
     }
 
+    if(!this->player.isAlive()){
+        this->gameOver=true;
+    }
+
     this->enemies.erase(
         remove_if(
             this->enemies.begin(),this->enemies.end(),
@@ -221,6 +242,13 @@ void Game::render(){
         this->renderText("Lives : 0",20,80);
     }
 
+    if(this->gameOver){
+        this->renderText("GAME OVER",330,230);
+        this->renderText("Final Score : "+to_string(this->score),300,270);
+        this->renderText("Final Wave : "+to_string(this->wave),310,300);
+        this->renderText("Press R for restart",285,330);
+        this->renderText("Press ESC for exit",295,360);
+    }
 
     SDL_RenderPresent(this->renderer);
 }
@@ -239,4 +267,17 @@ void Game::renderText(const string &text,int x,int y){
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
+}
+
+void Game::resetGame(){
+    this->score=0;
+    this->wave=1;
+    this->gameOver=false;
+
+    bullets.clear();
+    enemies.clear();
+
+    SDL_Texture *texture=this->player.getTexture();
+    player = Player();
+    player.setTexture(texture);
 }

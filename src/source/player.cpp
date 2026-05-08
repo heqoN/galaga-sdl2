@@ -43,6 +43,9 @@ Uint32 Player::getFireDelay(){
 void Player::setTexture(SDL_Texture *tex){
     this->texture=tex;
 }
+SDL_Texture* Player::getTexture(){
+    return this->texture;
+}
 
 void Player::takeDamage(int dmg){
     if(dmg>=this->health){
