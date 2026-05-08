@@ -39,7 +39,7 @@ SDL_Rect Bullet::getRect(){
     return this->rect;
 }
 
-bool Bullet::isActive(){
+bool Bullet::isActive()const{
     return this->active;
 }
 
@@ -58,7 +58,7 @@ void Bullet::update(){
             break;
     }
 
-    if(y<0)
+    if(y<0 || y>600)
         active=false;
 
     this->rect.x=(int)this->x;

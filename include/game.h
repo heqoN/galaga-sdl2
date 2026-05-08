@@ -8,6 +8,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "enemySpawner.h"
 
 using namespace std;
 
@@ -29,12 +30,14 @@ class Game{
 
         bool running;
         Player player;
-        Enemy enemy;
+        vector<Enemy> enemies;
         vector<Bullet> bullets;
+        EnemySpawner spawner;
 
         SDL_Window *window;
         SDL_Renderer *renderer;
         SDL_Texture *background;
+        SDL_Texture *enemyTexture;
         
 };
 

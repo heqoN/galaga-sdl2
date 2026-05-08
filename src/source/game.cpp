@@ -2,6 +2,7 @@
 #include "player.h"
 
 #include <iostream>
+#include <algorithm>    //for remove_if function
 
 using namespace std;
 
@@ -67,10 +68,7 @@ bool Game::init(){
         cout<<"Enemy texture load failed : "<<IMG_GetError()<<endl;
         return false;
     }
-    this->enemy.setTexture(enemyTexture);
-
-    // for now
-    this->enemy.setPosition(375.0f,50.0f);
+    this->enemyTexture=enemyTexture;
 
     return true;
 }
@@ -93,19 +91,17 @@ void Game::run(){
 
 void Game::handleEvents(){
     SDL_Event event;
-
     while(SDL_PollEvent(&event)){
         if(event.type==SDL_QUIT){
             running=false;
         }
     }
 
-
     const Uint8 *keystate=SDL_GetKeyboardState(nullptr);
     this->player.handleInput(keystate);
 
     Uint32 currentTime=SDL_GetTicks();
-    if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->player.getLastShootTime()  >  this->player.getFireDelay() ){
+    if(keystate[SDL_SCANCODE_SPACE] &&   currentTime - this->player.getLastShootTime()  >  this->player.getFireDelay()  &&  this->player.isAlive()==true){
         Bullet b;
 
         b.setPosition(this->player.getX()+20,this->player.getY());
@@ -119,21 +115,26 @@ void Game::handleEvents(){
 
 void Game::update(){
     this->player.update();
-    this->enemy.update();
 
+    for(auto &e:this->enemies){
+        e.update();
+    }
+    
     Uint32 currentTime=SDL_GetTicks();
-    if(this->enemy.isAlive()  &&  currentTime - this->enemy.getLastShootTime() > this->enemy.getFireDelay()){
-        Bullet b;
+    for(long unsigned int i=0 ; i<this->enemies.size() ; i++){
+        if(this->enemies[i].isAlive()  &&  currentTime - this->enemies[i].getLastShootTime() > this->enemies[i].getFireDelay()){
+            Bullet b;
 
-        b.setPosition(this->enemy.getX()+20,this->enemy.getY()+20);
-        b.shoot(BULLET_Type::Enemy);
+            b.setPosition(this->enemies[i].getX()+20,this->enemies[i].getY()+20);
+            b.shoot(BULLET_Type::Enemy);
 
-        this->bullets.push_back(b);
+            this->bullets.push_back(b);
 
-        this->enemy.currentToLastShootTime(currentTime);
+            this->enemies[i].currentToLastShootTime(currentTime);
+        }
     } 
 
-    for(auto &b:bullets){
+    for(auto &b:this->bullets){
         b.update();
     }
 
@@ -141,11 +142,13 @@ void Game::update(){
         bool erased=false;
 
         if(it->getType()==BULLET_Type::Player){
-            if(this->checkCollision(it->getRect(),this->enemy.getRect())){
-                it=bullets.erase(it);
-                erased=true;
+            for(auto &e:this->enemies){
+                if(this->checkCollision(it->getRect(),e.getRect())){
+                    it=bullets.erase(it);
+                    erased=true;
 
-                this->enemy.setDead();
+                    e.setDead();
+                }
             }
         }
 
@@ -162,7 +165,16 @@ void Game::update(){
             ++it;
     }
 
+    this->enemies.erase(
+        remove_if(
+            this->enemies.begin(),this->enemies.end(),
+            [](Enemy &e){return !e.isAlive();}
+        ),
+        this->enemies.end()
+    );
 
+    this->spawner.update(enemies,enemyTexture);
+    
 }
 
 void Game::render(){
@@ -174,9 +186,12 @@ void Game::render(){
     }
 
     this->player.render(this->renderer);
-    this->enemy.render(this->renderer);
+    
+    for(auto &e:this->enemies){
+        e.render(this->renderer);
+    }
 
-    for(auto &b:bullets){
+    for(auto &b:this->bullets){
         b.render(this->renderer);
     }
 

@@ -22,7 +22,7 @@ class Bullet{
         void setPosition(float x,float y);
 
         SDL_Rect getRect();
-        bool isActive();
+        bool isActive()const;
         BULLET_Type getType();
 
     private:

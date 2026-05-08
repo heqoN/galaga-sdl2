@@ -5,6 +5,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "enemySpawner.h"
 
 
 using namespace std;
