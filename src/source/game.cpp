@@ -11,23 +11,19 @@ Game::Game(){
     this->state=MENU;
     this->window=nullptr;
     this->renderer=nullptr;
-    this->background=nullptr;
 
     this->score=0;
     this->wave=1;
-    this->font=nullptr;
 }
 
 Game::~Game(){
-    if(this->background)
-        SDL_DestroyTexture(this->background);
+    this->assetManager.clean();
 
     if(this->renderer)
         SDL_DestroyRenderer(this->renderer);
 
     if(this->window)
         SDL_DestroyWindow(this->window);
-    
 
     IMG_Quit();
     SDL_Quit();
@@ -61,30 +57,11 @@ bool Game::init(){
         return false;
     }
 
-    this->background=IMG_LoadTexture(this->renderer,"../assets/background.png");
-    if(!this->background){
-        cout<<"Background load failed : "<<IMG_GetError()<<endl;
-    }
-
-    SDL_Texture *playerTexture=IMG_LoadTexture(this->renderer,"../assets/player.png");
-    if(!playerTexture){
-        cout<<"Player texture load failed : "<<IMG_GetError()<<endl;
+    if(!this->assetManager.load(this->renderer)){
         return false;
     }
-    this->player.setTexture(playerTexture);
 
-    SDL_Texture *enemyTexture=IMG_LoadTexture(this->renderer,"../assets/enemy.png");
-    if(!enemyTexture){
-        cout<<"Enemy texture load failed : "<<IMG_GetError()<<endl;
-        return false;
-    }
-    this->enemyTexture=enemyTexture;
-
-    this->font=TTF_OpenFont("../assets/arial.ttf",20);
-    if(!font){
-        cout<<"Font load failed : "<<TTF_GetError()<<endl;
-        return false;
-    }
+    this->player.setTexture(this->assetManager.getPlayerTexture());
 
     return true;
 }
@@ -220,7 +197,7 @@ void Game::update(){
         this->enemies.end()
     );
 
-    this->spawner.update(enemies,enemyTexture);
+    this->spawner.update(enemies,this->assetManager.getEnemyTexture());
     this->wave=this->spawner.getCurrentWave();
     
 }
@@ -229,12 +206,14 @@ void Game::render(){
     SDL_SetRenderDrawColor(this->renderer,0,0,0,255);
     SDL_RenderClear(this->renderer);
 
-    if(this->background && this->state!=MENU){
-        SDL_RenderCopy(this->renderer, this->background, nullptr, nullptr);
+    if(this->assetManager.getBackgroundTexture() && this->state!=MENU){
+        SDL_RenderCopy(this->renderer, this->assetManager.getBackgroundTexture(), nullptr, nullptr);
     }
 
-    this->player.render(this->renderer);
-    
+    if(!this->state==MENU){
+        this->player.render(this->renderer);
+    }
+
     for(auto &e:this->enemies){
         e.render(this->renderer);
     }
@@ -243,21 +222,14 @@ void Game::render(){
         b.render(this->renderer);
     }
 
-    this->renderText("Score : "+to_string(this->score),20,20);
-    this->renderText("Wave : "+to_string(this->wave),20,50);
-    if(this->player.isAlive()){
-        this->renderText("Lives : "+to_string(this->player.getHealth()),20,80);
-    }
-    else{
-        this->renderText("Lives : 0",20,80);
-    }
+    this->uiManager.renderHud(this->renderer,this->assetManager.getFont(),this->player.isAlive(),this->score,this->wave,this->player.getHealth());
 
     if(this->state==MENU){
-        this->renderMenu();
+        this->uiManager.renderMenu(this->renderer,this->assetManager.getFont());
     }
 
     else if(this->state==GAME_OVER){
-        this->renderGameOverMenu();
+        this->uiManager.renderGameOverMenu(this->renderer,this->assetManager.getFont(),this->score,this->wave);
     }
 
     SDL_RenderPresent(this->renderer);
@@ -265,18 +237,6 @@ void Game::render(){
 
 bool Game::checkCollision(const SDL_Rect &a,const SDL_Rect &b){
     return SDL_HasIntersection(&a,&b);
-}
-
-void Game::renderText(const string &text,int x,int y){
-    SDL_Color color={255,255,255,255};
-    SDL_Surface *surface=TTF_RenderText_Solid(this->font,text.c_str(),color);
-    SDL_Texture *texture=SDL_CreateTextureFromSurface(this->renderer,surface);
-    SDL_Rect rect={x,y,surface->w,surface->h};
-
-    SDL_RenderCopy(this->renderer,texture,NULL,&rect);
-
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
 }
 
 void Game::resetGame(){
@@ -290,18 +250,4 @@ void Game::resetGame(){
     SDL_Texture *texture=this->player.getTexture();
     this->player = Player();
     this->player.setTexture(texture);
-}
-
-void Game::renderGameOverMenu(){
-    this->renderText("GAME OVER",330,230);
-    this->renderText("Final Score : "+to_string(this->score),300,270);
-    this->renderText("Final Wave : "+to_string(this->wave),310,300);
-    this->renderText("Press R for restart",285,330);
-    this->renderText("Press ESC for exit",295,360);
-}
-
-void Game::renderMenu(){
-    renderText("GALAGA SDL2",320,180);
-    renderText("Press ENTER to Start",280,300);
-    renderText("Press ESC to Exit",300,380);
 }

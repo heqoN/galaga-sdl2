@@ -11,6 +11,8 @@
 #include "enemy.h"
 #include "bullet.h"
 #include "enemySpawner.h"
+#include "assetManager.h"
+#include "UIManager.h"
 
 using namespace std;
 
@@ -27,10 +29,7 @@ class Game{
 
         bool init();
         void run();
-        void renderText(const string &text,int x,int y);
         void resetGame();
-        void renderMenu();
-        void renderGameOverMenu();
 
         bool checkCollision(const SDL_Rect &a,const SDL_Rect &b);
 
@@ -41,7 +40,6 @@ class Game{
 
         int score;
         int wave;
-        TTF_Font *font;
 
         bool running;
         GameState state;
@@ -50,11 +48,11 @@ class Game{
         vector<Enemy> enemies;
         vector<Bullet> bullets;
         EnemySpawner spawner;
+        AssetManager assetManager;
+        UIManager uiManager;
 
         SDL_Window *window;
         SDL_Renderer *renderer;
-        SDL_Texture *background;
-        SDL_Texture *enemyTexture;
         
 };
 
