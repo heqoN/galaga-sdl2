@@ -28,7 +28,8 @@ void UIManager::renderHud(SDL_Renderer* renderer,TTF_Font* font,bool alive,int s
 void UIManager::renderMenu(SDL_Renderer* renderer,TTF_Font* font){
     this->renderText(renderer,font,"GALAGA SDL2",320,180);
     this->renderText(renderer,font,"Press ENTER to Start",280,300);
-    this->renderText(renderer,font,"Press ESC to Exit",300,380);
+    this->renderText(renderer,font,"Press L to View Leaderboard",240,380);
+    this->renderText(renderer,font,"Press ESC to Exit",300,460);
 }
 
 void UIManager::renderGameOverMenu(SDL_Renderer* renderer,TTF_Font* font,int score,int wave){
@@ -36,5 +37,22 @@ void UIManager::renderGameOverMenu(SDL_Renderer* renderer,TTF_Font* font,int sco
     this->renderText(renderer,font,"Final Score: " + std::to_string(score),300,270);
     this->renderText(renderer,font,"Final Wave: " + std::to_string(wave),310,300);
     this->renderText(renderer,font,"Press R for restart",285,330);
-    this->renderText(renderer,font,"Press ESC to Exit",300,360);
+    this->renderText(renderer,font,"Press BACKSPACE to return to Menu",225,360);
+    this->renderText(renderer,font,"Press ESC to Exit",300,390);
+}
+
+void UIManager::renderLeaderboard(SDL_Renderer *renderer,TTF_Font *font,vector<int> scores){
+    this->renderText(renderer,font,"Leaderboard :",320,180);
+
+    if(scores.empty()){
+        this->renderText(renderer,font,"No scores yet",300,300);
+    }
+    else{
+        for(long unsigned int i = 0; i < scores.size(); i++){
+            string text = to_string(i+1) + "- " + to_string(scores[i]);
+            this->renderText(renderer,font,text,300,270 + i*30);
+        }
+    }
+
+    this->renderText(renderer,font,"Press BACKSPACE to return to Menu",200,450);
 }

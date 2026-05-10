@@ -9,6 +9,7 @@
 #include "enemySpawner.h"
 #include "assetManager.h"
 #include "UIManager.h"
+#include "leaderboard.h"
 
 
 using namespace std;

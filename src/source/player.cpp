@@ -21,12 +21,7 @@ Player::Player(){
     this->fireDelay=200;
 }
 
-Player::~Player(){
-    if(this->texture){
-        SDL_DestroyTexture(this->texture);
-        this->texture=nullptr;
-    }
-};
+Player::~Player(){}
 
 void Player::currentToLastShootTime(Uint32 currentTime){
     this->lastShootTime=currentTime;

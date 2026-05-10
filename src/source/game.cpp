@@ -27,6 +27,7 @@ Game::~Game(){
 
     IMG_Quit();
     SDL_Quit();
+    TTF_Quit();
 }
 
 bool Game::init(){
@@ -89,29 +90,46 @@ void Game::run(){
 void Game::handleEvents(){
     SDL_Event event;
     while(SDL_PollEvent(&event)){
-        if(event.type==SDL_QUIT){
+        if(event.type==SDL_QUIT || event.key.keysym.sym==SDLK_ESCAPE){
             running=false;
         }
 
-        if(event.key.keysym.sym==SDLK_ESCAPE){
-            this->running=false;
-        }
+        switch(this->state){
+            case MENU:
+                if(event.type==SDL_KEYDOWN){
+                    if(event.key.keysym.sym==SDLK_RETURN){
+                        this->resetGame();
+                    }
 
-        if(this->state==MENU){
-            if(event.type==SDL_KEYDOWN){
-                if(event.key.keysym.sym==SDLK_RETURN){
-                    this->resetGame();
+                    if(event.key.keysym.sym==SDLK_l){
+                        this->state=LEADERBOARD;
+                    }
                 }
-            }
-        }
+                break;
 
-        else if(this->state==GAME_OVER){
-            if(event.type==SDL_KEYDOWN){
-                if(event.key.keysym.sym==SDLK_r){
-                    this->resetGame();
+            case GAME_OVER:
+                if(event.type==SDL_KEYDOWN){
+                    if(event.key.keysym.sym==SDLK_r){   
+                        this->resetGame();
+                    }
+
+                    if(event.key.keysym.sym==SDLK_BACKSPACE){
+                        this->state=MENU;
+                    }
                 }
-            }
-        }
+                break;
+
+            case PLAYING:
+                break;
+            
+            case LEADERBOARD:
+                if(event.type==SDL_KEYDOWN){
+                    if(event.key.keysym.sym==SDLK_BACKSPACE){
+                        this->state=MENU;
+                    }
+                }
+        }; 
+                
     }
 
     if(this->state==PLAYING){
@@ -129,7 +147,7 @@ void Game::handleEvents(){
 
             this->player.currentToLastShootTime(currentTime);
         }
-    }   
+    }
 }
 
 void Game::update(){
@@ -140,7 +158,7 @@ void Game::update(){
     }
     
     Uint32 currentTime=SDL_GetTicks();
-    for(long unsigned int i=0 ; i<this->enemies.size() ; i++){
+    for(long unsigned int i=0 ; i < this->enemies.size() ; i++){
         if(this->enemies[i].isAlive()  &&  currentTime - this->enemies[i].getLastShootTime() > this->enemies[i].getFireDelay()){
             Bullet b;
 
@@ -187,6 +205,7 @@ void Game::update(){
 
     if(!this->player.isAlive()){
         this->state=GAME_OVER;
+        this->leaderboard.saveScore(this->score);
     }
 
     this->enemies.erase(
@@ -206,30 +225,35 @@ void Game::render(){
     SDL_SetRenderDrawColor(this->renderer,0,0,0,255);
     SDL_RenderClear(this->renderer);
 
-    if(this->assetManager.getBackgroundTexture() && this->state!=MENU){
-        SDL_RenderCopy(this->renderer, this->assetManager.getBackgroundTexture(), nullptr, nullptr);
-    }
+    switch(this->state){
+        case MENU:
+            this->uiManager.renderMenu(this->renderer,this->assetManager.getFont());
+            break;
+        
+        case LEADERBOARD:
+            this->uiManager.renderLeaderboard(this->renderer,this->assetManager.getFont(),this->leaderboard.getScores());
+            break;
 
-    if(!this->state==MENU){
-        this->player.render(this->renderer);
-    }
+        case PLAYING:
+            if(this->assetManager.getBackgroundTexture()){
+                SDL_RenderCopy(this->renderer,this->assetManager.getBackgroundTexture(),nullptr,nullptr);
+            }
+            this->player.render(this->renderer);
+            
+            for(auto &e:enemies){
+                e.render(this->renderer);
+            }
 
-    for(auto &e:this->enemies){
-        e.render(this->renderer);
-    }
+            for(auto &b:bullets){
+                b.render(this->renderer);
+            }
 
-    for(auto &b:this->bullets){
-        b.render(this->renderer);
-    }
+            this->uiManager.renderHud(this->renderer,this->assetManager.getFont(),this->player.isAlive(),this->score,this->wave,this->player.getHealth());
+            break;
 
-    this->uiManager.renderHud(this->renderer,this->assetManager.getFont(),this->player.isAlive(),this->score,this->wave,this->player.getHealth());
-
-    if(this->state==MENU){
-        this->uiManager.renderMenu(this->renderer,this->assetManager.getFont());
-    }
-
-    else if(this->state==GAME_OVER){
-        this->uiManager.renderGameOverMenu(this->renderer,this->assetManager.getFont(),this->score,this->wave);
+        case GAME_OVER:
+            this->uiManager.renderGameOverMenu(this->renderer,this->assetManager.getFont(),this->score,this->wave);
+            break;
     }
 
     SDL_RenderPresent(this->renderer);

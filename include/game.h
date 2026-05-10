@@ -13,13 +13,15 @@
 #include "enemySpawner.h"
 #include "assetManager.h"
 #include "UIManager.h"
+#include "leaderboard.h"
 
 using namespace std;
 
 enum GameState{
     MENU,
     PLAYING,
-    GAME_OVER
+    GAME_OVER,
+    LEADERBOARD
 };
 
 class Game{
@@ -50,6 +52,7 @@ class Game{
         EnemySpawner spawner;
         AssetManager assetManager;
         UIManager uiManager;
+        Leaderboard leaderboard;
 
         SDL_Window *window;
         SDL_Renderer *renderer;
