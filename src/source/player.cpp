@@ -8,7 +8,7 @@ Player::Player(){
     this->y=400;
 
     this->speed=5;
-    this->health=3;
+    this->health=5;
     this->alive=true;
     this->texture=nullptr;
 

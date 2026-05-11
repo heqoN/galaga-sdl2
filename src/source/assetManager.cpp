@@ -30,7 +30,7 @@ bool AssetManager::load(SDL_Renderer *renderer){
         return false;
     }
 
-    this->font=TTF_OpenFont("../assets/arial.ttf",20);
+    this->font=TTF_OpenFont("../assets/font.ttf",16);
     if(!this->font){
         cout<<"Font load failed : "<<TTF_GetError()<<endl;
         return false;

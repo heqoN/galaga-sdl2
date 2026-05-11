@@ -43,6 +43,13 @@ bool Bullet::isActive()const{
     return this->active;
 }
 
+bool Bullet::isOut()const{
+    if (this->y < -50 || this->y > 650 || this->x < -50 || this->x > 850) {
+        return true;
+    }
+    return false;
+}
+
 void Bullet::update(){
     if(!active)
         return;
@@ -58,8 +65,9 @@ void Bullet::update(){
             break;
     }
 
-    if(y<0 || y>600)
-        active=false;
+    if (this->isOut()) {
+        this->active = false; 
+    }
 
     this->rect.x=(int)this->x;
     this->rect.y=(int)this->y;

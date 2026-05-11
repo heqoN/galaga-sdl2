@@ -2,17 +2,29 @@
 #define ENEMY_H
 
 #include <SDL2/SDL.h>
+#include <cmath>
+
+enum class EnemyState{
+    ENTERING,
+    IN_FORMATION,
+    DIVING,
+    RETURNING
+};
 
 class Enemy{
     public:
         Enemy();
         ~Enemy();
 
-        void update();
+        void update(float formationXOffset);
         void render(SDL_Renderer *renderer);
 
         void setTexture(SDL_Texture *tex);
         void setPosition(float x,float y);
+        void setHomePosition(float x, float y);
+        void startDive();
+        bool isTargetable()const;
+
 
         void setAlive();
         void setDead();
@@ -29,9 +41,13 @@ class Enemy{
 
     private:
         float x,y;
+        float homeX,homeY;
         int speed;
         int direction; //1 sağ , -1 sol
         bool alive;
+
+        EnemyState state;
+        float angle;
 
         Uint32 lastShootTime;
         Uint32 fireDelay;

@@ -154,7 +154,7 @@ void Game::update(){
     this->player.update();
 
     for(auto &e:this->enemies){
-        e.update();
+        e.update(this->spawner.getFormationOffset());
     }
     
     Uint32 currentTime=SDL_GetTicks();
@@ -180,12 +180,15 @@ void Game::update(){
 
         if(it->getType()==BULLET_Type::Player){
             for(auto &e:this->enemies){
-                if(this->checkCollision(it->getRect(),e.getRect())){
-                    it=bullets.erase(it);
-                    erased=true;
+                if(e.getY()>0 && e.isTargetable() && e.isAlive()){
+                    if(this->checkCollision(it->getRect(),e.getRect())){
+                        it=bullets.erase(it);
+                        erased=true;
 
-                    e.setDead();
-                    this->score+=1;
+                        e.setDead();
+                        this->score+=1;
+                        break;
+                    }
                 }
             }
         }
@@ -214,6 +217,12 @@ void Game::update(){
             [](Enemy &e){return !e.isAlive();}
         ),
         this->enemies.end()
+    );
+
+    this->bullets.erase(
+        remove_if(this->bullets.begin(), this->bullets.end(),
+        [](const Bullet& b) { return !b.isActive(); }), 
+        this->bullets.end() 
     );
 
     this->spawner.update(enemies,this->assetManager.getEnemyTexture());
@@ -274,4 +283,6 @@ void Game::resetGame(){
     SDL_Texture *texture=this->player.getTexture();
     this->player = Player();
     this->player.setTexture(texture);
+
+    this->spawner=EnemySpawner();
 }

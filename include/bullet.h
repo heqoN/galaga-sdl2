@@ -25,6 +25,8 @@ class Bullet{
         bool isActive()const;
         BULLET_Type getType();
 
+        bool isOut()const;
+
     private:
         float x,y;
         int speed;

@@ -18,6 +18,16 @@ class EnemySpawner{
 
         int getCurrentWave()const;
 
+        int rowSize;
+        float spacingX;
+        float spacingY;
+        float startX;
+        float startY;
+
+        float formationOffset;
+        int formationDirection;
+        float formationSpeed;
+
     public:
         EnemySpawner();
         ~EnemySpawner();
@@ -26,6 +36,8 @@ class EnemySpawner{
 
         void nextWave();
         void update(vector<Enemy> &enemies,SDL_Texture *enemyTexture);
+
+        float getFormationOffset();
 };
 
 

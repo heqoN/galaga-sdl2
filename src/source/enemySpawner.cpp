@@ -8,6 +8,16 @@ EnemySpawner::EnemySpawner(){
     this->currentWave=1;
     this->enemiesPerWave=5;
     this->spawnedEnemies=0;
+
+    this->rowSize = 6;
+    this->spacingX = 100.0f;
+    this->spacingY = 60.0f;
+    this->startX = 150.0f;
+    this->startY = 50.0f;
+
+    this->formationOffset = 0.0f;
+    this->formationDirection = 1;
+    this->formationSpeed = 1.0f;
 }
 
 EnemySpawner::~EnemySpawner(){}
@@ -31,23 +41,49 @@ int EnemySpawner::getCurrentWave(){
     return this->currentWave;
 }
 
+float EnemySpawner::getFormationOffset(){
+    return this->formationOffset;
+}
+
 void EnemySpawner::update(vector<Enemy> &enemies,SDL_Texture *texture){
-    Uint32 currentTime=SDL_GetTicks();
+    this->formationOffset += this->formationDirection * this->formationSpeed;
 
-    if(this->spawnedEnemies < this->enemiesPerWave  &&  currentTime - this->lastSpawnTime > this->spawnDelay){
-        Enemy e;
-        e.setTexture(texture);
-
-        int randomX=rand()%700+50;
-        e.setPosition(randomX,50);
-
-        enemies.push_back(e);
-
-        this->spawnedEnemies++;
-        this->lastSpawnTime=currentTime;
+    if (std::abs(this->formationOffset) > 50.0f) {
+        this->formationDirection *= -1;
     }
 
-    if(enemies.empty() && this->spawnedEnemies >= this->enemiesPerWave){
+    Uint32 currentTime = SDL_GetTicks();
+    if (this->spawnedEnemies < this->enemiesPerWave && currentTime - this->lastSpawnTime > this->spawnDelay) {
+        if (texture != nullptr) {
+            Enemy e;
+            e.setTexture(texture);
+
+            int col = this->spawnedEnemies % this->rowSize;
+            int row = this->spawnedEnemies / this->rowSize;
+
+            float targetX = startX + (col * spacingX);
+            float targetY = startY + (row * spacingY);
+
+            e.setPosition(targetX, -50.0f);
+            e.setHomePosition(targetX, targetY);
+
+            enemies.push_back(e);
+
+            this->spawnedEnemies++;
+            this->lastSpawnTime = currentTime;
+        }
+    }
+
+    for (auto &e : enemies) {
+        e.update(this->formationOffset);
+    }
+
+    if (enemies.empty() && this->spawnedEnemies >= this->enemiesPerWave) {
         this->nextWave();
+    }
+
+    if (!enemies.empty() && rand() % 500 == 0) {
+        int randomIndex = rand() % enemies.size();
+        enemies[randomIndex].startDive(); 
     }
 }
