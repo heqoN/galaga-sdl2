@@ -6,7 +6,7 @@
 using namespace std;
 
 void Leaderboard::saveScore(int score){
-    ofstream file("../assets/leaderboard.txt",ios::app);
+    ofstream file("../assets/data/leaderboard.txt",ios::app);
 
     if(file.is_open()){
         file<<score<<'\n';
@@ -17,7 +17,7 @@ void Leaderboard::saveScore(int score){
 }
 
 vector<int> Leaderboard::getScores(){
-    ifstream file("../assets/leaderboard.txt");
+    ifstream file("../assets/data/leaderboard.txt");
 
     if(!file.is_open()){
         cout<<"Leaderboard file can't opened ."<<endl;

@@ -25,9 +25,12 @@ Game::~Game(){
     if(this->window)
         SDL_DestroyWindow(this->window);
 
+    Mix_CloseAudio();
+
     IMG_Quit();
     SDL_Quit();
     TTF_Quit();
+    Mix_Quit();
 }
 
 bool Game::init(){
@@ -43,6 +46,11 @@ bool Game::init(){
 
     if(TTF_Init()==-1){
         cout<<"TTF init failed : "<<TTF_GetError()<<endl;
+        return false;
+    }
+
+    if (Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,1024) < 0) {
+        cout<<"Mixer init failed : "<<Mix_GetError()<<endl;
         return false;
     }
 
@@ -63,6 +71,8 @@ bool Game::init(){
     }
 
     this->player.setTexture(this->assetManager.getPlayerTexture());
+
+    Mix_PlayMusic(this->assetManager.getBackgroundMusic(),-1);
 
     return true;
 }
@@ -143,6 +153,8 @@ void Game::handleEvents(){
             b.setPosition(this->player.getX()+20,this->player.getY());
             b.shoot(BULLET_Type::Player);
 
+            Mix_PlayChannel(-1,this->assetManager.getLaserEffect(),0);
+
             this->bullets.push_back(b);
 
             this->player.currentToLastShootTime(currentTime);
@@ -187,6 +199,7 @@ void Game::update(){
 
                         e.setDead();
                         this->score+=1;
+                        Mix_PlayChannel(-1,this->assetManager.getExplosionEffect(),0);
                         break;
                     }
                 }

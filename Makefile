@@ -9,7 +9,7 @@ CXXFLAGS := -std=c++17 -Wall -Wextra
 # SDL2 (Linux / MSYS2 uyumlu)
 # =========================
 SDL_CFLAGS := $(shell sdl2-config --cflags)
-SDL_LIBS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_ttf
+SDL_LIBS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 # =========================
 # Project structure
