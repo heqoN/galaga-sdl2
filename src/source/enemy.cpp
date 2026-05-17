@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Enemy::Enemy(){
+Enemy::Enemy(EnemyType t){
     this->x=0.0f;
     this->y=-50.0f;
     this->homeX=0.0f;
@@ -15,15 +15,23 @@ Enemy::Enemy(){
     this->direction=1;
     this->texture=nullptr;
     this->alive=true;
+    this->health=1;
     this->state=EnemyState::ENTERING;
+    this->type=t;
 
-    this->rect.x=0;
-    this->rect.y=0;
-    this->rect.w=50;
-    this->rect.h=50;
+    if (this->type == EnemyType::BOSS) {
+        this->rect.w = 80;
+        this->rect.h = 80;
+        this->health = 5;
+        this->fireDelay = 800;
+    } else {
+        this->rect.w = 50;
+        this->rect.h = 50;
+        this->health = 1;
+        this->fireDelay = 1500;
+    }
 
     this->lastShootTime=0;
-    this->fireDelay=1500;
 }
 
 Enemy::~Enemy(){}
@@ -54,6 +62,24 @@ void Enemy::setDead(){
 
 bool Enemy::isAlive(){
     return this->alive;
+}
+
+int Enemy::getHealth(){
+    return this->health;
+}
+
+EnemyType Enemy::getType(){
+    return this->type;
+}
+
+bool Enemy::takeDamage(int amount){
+    this->health-=amount;
+    if(this->health<=0){
+        this->alive=false;
+        return true;
+    }
+
+    return false;
 }
 
 float Enemy::getX(){

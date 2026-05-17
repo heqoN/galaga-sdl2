@@ -1,4 +1,5 @@
 #include "UIManager.h"
+#include <string>
 
 using namespace std;
 
@@ -15,10 +16,10 @@ void UIManager::renderText(SDL_Renderer *renderer,TTF_Font *font,const string &t
 }
 
 void UIManager::renderHud(SDL_Renderer* renderer,TTF_Font* font,bool alive,int score,int wave,int lives){
-    this->renderText(renderer,font,"Score: " + to_string(score),20,20);
-    this->renderText(renderer,font,"Wave: " + to_string(wave),20,50);
+    this->renderText(renderer,font,"Score: " + std::to_string(score),20,20);
+    this->renderText(renderer,font,"Wave: " + std::to_string(wave),20,50);
     if(alive){
-        this->renderText(renderer,font,"Lives: " + to_string(lives),20,80);
+        this->renderText(renderer,font,"Lives: " + std::to_string(lives),20,80);
     }
     else{
         this->renderText(renderer,font,"Lives: 0",20,80);
@@ -49,7 +50,7 @@ void UIManager::renderLeaderboard(SDL_Renderer *renderer,TTF_Font *font,vector<i
     }
     else{
         for(long unsigned int i = 0; i < scores.size(); i++){
-            string text = to_string(i+1) + "- " + to_string(scores[i]);
+            string text = std::to_string(i+1) + "- " + std::to_string(scores[i]);
             this->renderText(renderer,font,text,300,270 + i*30);
         }
     }

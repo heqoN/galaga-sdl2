@@ -12,6 +12,7 @@ class AssetManager{
     private:
         SDL_Texture *playerTexture;
         SDL_Texture *enemyTexture;
+        SDL_Texture *bossTexture;
         SDL_Texture *backgroundTexture;
         TTF_Font *font;
         Mix_Music *backgroundMusic;
@@ -27,6 +28,7 @@ class AssetManager{
 
         SDL_Texture* getPlayerTexture();
         SDL_Texture* getEnemyTexture();
+        SDL_Texture* getBossTexture();
         SDL_Texture* getBackgroundTexture();
         TTF_Font* getFont();
         Mix_Music* getBackgroundMusic();

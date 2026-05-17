@@ -35,7 +35,7 @@ class EnemySpawner{
         int getCurrentWave();
 
         void nextWave();
-        void update(vector<Enemy> &enemies,SDL_Texture *enemyTexture);
+        void update(vector<Enemy> &enemies,SDL_Texture *enemyTexture,SDL_Texture *bossTexture);
 
         float getFormationOffset();
 };

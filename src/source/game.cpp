@@ -190,16 +190,25 @@ void Game::update(){
     for(auto it=bullets.begin(); it !=bullets.end();){
         bool erased=false;
 
-        if(it->getType()==BULLET_Type::Player){
-            for(auto &e:this->enemies){
-                if(e.getY()>0 && e.isTargetable() && e.isAlive()){
-                    if(this->checkCollision(it->getRect(),e.getRect())){
-                        it=bullets.erase(it);
-                        erased=true;
+        if(it->getType() == BULLET_Type::Player){
+            for(auto &e : this->enemies){
+                if(e.getY() > 0 && e.isTargetable() && e.isAlive()){
+                    if(this->checkCollision(it->getRect(), e.getRect())){
+                        
+                        it = bullets.erase(it);
+                        erased = true;
 
-                        e.setDead();
-                        this->score+=1;
-                        Mix_PlayChannel(-1,this->assetManager.getExplosionEffect(),0);
+                        if (e.takeDamage(1)) {
+                            if (e.getType() == EnemyType::BOSS) {
+                                this->score += 25;
+                            } else {
+                                this->score += 1;
+                            }
+                            Mix_PlayChannel(-1, this->assetManager.getExplosionEffect(), 0);
+                        } else {
+                            Mix_PlayChannel(-1, this->assetManager.getLaserEffect(), 0); 
+                        }
+                        
                         break;
                     }
                 }
@@ -238,7 +247,7 @@ void Game::update(){
         this->bullets.end() 
     );
 
-    this->spawner.update(enemies,this->assetManager.getEnemyTexture());
+    this->spawner.update(enemies,this->assetManager.getEnemyTexture(),this->assetManager.getBossTexture());
     this->wave=this->spawner.getCurrentWave();
     
 }

@@ -28,12 +28,16 @@ int EnemySpawner::getCurrentWave()const{
 
 void EnemySpawner::nextWave(){
     this->currentWave++;
+    this->spawnedEnemies = 0;
 
-    this->enemiesPerWave+=2;
-    this->spawnedEnemies=0;
+    if (this->currentWave % 3 == 0) {
+        this->enemiesPerWave = 1;
+    } else {
+        this->enemiesPerWave = 5 + (this->currentWave / 3) * 2; 
+    }
 
-    if(this->spawnDelay > 500){
-        this->spawnDelay-=100;
+    if (this->spawnDelay > 500) {
+        this->spawnDelay -= 100;
     }
 }
 
@@ -45,7 +49,7 @@ float EnemySpawner::getFormationOffset(){
     return this->formationOffset;
 }
 
-void EnemySpawner::update(vector<Enemy> &enemies,SDL_Texture *texture){
+void EnemySpawner::update(vector<Enemy> &enemies,SDL_Texture *enemyTexture,SDL_Texture *bossTexture){
     this->formationOffset += this->formationDirection * this->formationSpeed;
 
     if (std::abs(this->formationOffset) > 50.0f) {
@@ -54,9 +58,19 @@ void EnemySpawner::update(vector<Enemy> &enemies,SDL_Texture *texture){
 
     Uint32 currentTime = SDL_GetTicks();
     if (this->spawnedEnemies < this->enemiesPerWave && currentTime - this->lastSpawnTime > this->spawnDelay) {
-        if (texture != nullptr) {
-            Enemy e;
-            e.setTexture(texture);
+        if (enemyTexture != nullptr && bossTexture!=nullptr) {
+            EnemyType spawnType = EnemyType::NORMAL;
+            if (this->currentWave % 3 == 0) {
+                spawnType = EnemyType::BOSS;
+            }
+
+            Enemy e(spawnType);
+            if(spawnType==EnemyType::NORMAL){
+                e.setTexture(enemyTexture);
+            }
+            else if(spawnType==EnemyType::BOSS){
+                e.setTexture(bossTexture);
+            }
 
             int col = this->spawnedEnemies % this->rowSize;
             int row = this->spawnedEnemies / this->rowSize;

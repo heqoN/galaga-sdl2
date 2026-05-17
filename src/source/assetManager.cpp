@@ -5,6 +5,7 @@
 AssetManager::AssetManager(){
     this->backgroundTexture=nullptr;
     this->enemyTexture=nullptr;
+    this->bossTexture=nullptr;
     this->playerTexture=nullptr;
     this->font=nullptr;
     this->backgroundMusic=nullptr;
@@ -24,6 +25,12 @@ bool AssetManager::load(SDL_Renderer *renderer){
     this->enemyTexture=IMG_LoadTexture(renderer,"../assets/texture/enemy.png");
     if(!this->enemyTexture){
         cout<<"Enemy texture load failed : "<<IMG_GetError()<<endl;
+        return false;
+    }
+
+    this->bossTexture=IMG_LoadTexture(renderer,"../assets/texture/boss.png");
+    if(!this->bossTexture){
+        cout<<"Boss texture load failed : "<<IMG_GetError()<<endl;
         return false;
     }
 
@@ -78,6 +85,10 @@ SDL_Texture* AssetManager::getPlayerTexture(){
 
 SDL_Texture* AssetManager::getEnemyTexture(){
     return this->enemyTexture;
+}
+
+SDL_Texture* AssetManager::getBossTexture(){
+    return this->bossTexture;
 }
 
 TTF_Font* AssetManager::getFont(){

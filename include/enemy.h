@@ -11,9 +11,14 @@ enum class EnemyState{
     RETURNING
 };
 
+enum class EnemyType{
+    NORMAL,
+    BOSS
+};
+
 class Enemy{
     public:
-        Enemy();
+        Enemy(EnemyType t=EnemyType::NORMAL);
         ~Enemy();
 
         void update(float formationXOffset);
@@ -24,7 +29,10 @@ class Enemy{
         void setHomePosition(float x, float y);
         void startDive();
         bool isTargetable()const;
+        bool takeDamage(int amount);
 
+        int getHealth();
+        EnemyType getType();
 
         void setAlive();
         void setDead();
@@ -45,8 +53,10 @@ class Enemy{
         int speed;
         int direction; //1 sağ , -1 sol
         bool alive;
+        int health;
 
         EnemyState state;
+        EnemyType type;
         float angle;
 
         Uint32 lastShootTime;
